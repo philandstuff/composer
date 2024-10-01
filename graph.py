@@ -1,5 +1,6 @@
 import asyncio
 import graphlib
+import replicate
 import uuid
 
 
@@ -21,7 +22,8 @@ class PredictionNode(Node):
         self._version = version
 
     async def execute(self, *args):
-        print(f"would execute {self._version} with input {args}")
+        input = args[0]
+        return replicate.run(self._version, input)
 
 
 class ValueNode(Node):
