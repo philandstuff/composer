@@ -19,16 +19,20 @@ class Node(object):
 class PredictionNode(Node):
     def __init__(self, version):
         super().__init__()
+        # FIXME not unique enough, good for demo though
+        self._id = f"predict on {version}"
         self._version = version
 
     async def execute(self, *args):
         input = args[0]
-        return replicate.run(self._version, input)
+        print(f"starting prediction on {self._version} with {input}")
+        return await replicate.async_run(self._version, input)
 
 
 class ValueNode(Node):
     def __init__(self, value):
         super().__init__()
+        self._id = value
         self._value = value
 
     async def execute(self, *args):
@@ -56,7 +60,6 @@ class Composite(object):
         self._graph[node.id] = dependencies
 
     async def _visit(self, n: Node, sorter: graphlib.TopologicalSorter, *args):
-        print(f"visit {n}")
         self._output[n.id] = await n.execute(*args)
         print(f"node {n} returned {self._output[n.id]}")
         sorter.done(n.id)
